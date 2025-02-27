@@ -1,0 +1,14 @@
+/* Profile Picture */
+.profile-pic {
+    width: 180px !important;
+    height: 180px !important;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+    margin: auto;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.offcanvas {
+    width: 250px !important; /* Ensure small sidebar */
+}
