@@ -1,69 +1,80 @@
 // Smooth scrolling for internal links
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
+    anchor.addEventListener("click", function (e) {
         e.preventDefault();
-        document.querySelector(this.getAttribute('href')).scrollIntoView({
-            behavior: 'smooth'
-        });
-    });
-});
-
-// Mobile menu toggle
-const menuToggle = document.querySelector('.menu-toggle');
-const navLinks = document.querySelector('.nav-links');
-
-if (menuToggle) {
-    menuToggle.addEventListener('click', () => {
-        navLinks.classList.toggle('active');
-    });
-}
-
-// Highlight active section in navigation
-window.addEventListener('scroll', () => {
-    let sections = document.querySelectorAll('section');
-    let navLinks = document.querySelectorAll('.nav-links a');
-
-    sections.forEach(sec => {
-        let top = window.scrollY;
-        let offset = sec.offsetTop - 100;
-        let height = sec.offsetHeight;
-        let id = sec.getAttribute('id');
-
-        if (top >= offset && top < offset + height) {
-            navLinks.forEach(link => {
-                link.classList.remove('active');
-                document.querySelector(`.nav-links a[href="#${id}"]`)?.classList.add('active');
-            });
+        const href = this.getAttribute("href");
+        // If the href attribute is just "#", then do nothing.
+        if (href === "#") {
+            return;
+        }
+        const target = document.querySelector(href); // href already contains the '#'
+        if (target) {
+            target.scrollIntoView({ behavior: "smooth", block: "start" });
         }
     });
 });
 
-// Back to Top Button
-const backToTop = document.createElement('button');
-backToTop.innerText = '↑';
-backToTop.classList.add('back-to-top');
-document.body.appendChild(backToTop);
+// Highlight active section in navigation
+const sections = document.querySelectorAll("section");
+const navLinks = document.querySelectorAll(".nav-link");
 
-backToTop.style.position = 'fixed';
-backToTop.style.bottom = '20px';
-backToTop.style.right = '20px';
-backToTop.style.padding = '10px 15px';
-backToTop.style.fontSize = '20px';
-backToTop.style.background = '#f39c12';
-backToTop.style.color = '#fff';
-backToTop.style.border = 'none';
-backToTop.style.borderRadius = '50%';
-backToTop.style.cursor = 'pointer';
-backToTop.style.display = 'none';
+window.addEventListener("scroll", () => {
+    let current = "";
+    sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        if (pageYOffset >= sectionTop - 50) {
+            current = section.getAttribute("id");
+        }
+    });
 
-window.addEventListener('scroll', () => {
+    navLinks.forEach(link => {
+        link.classList.remove("active");
+        if (link.getAttribute("href").includes(current)) {
+            link.classList.add("active");
+        }
+    });
+});
+
+
+
+
+// Back to top button
+// Back to top button
+const backToTopButton = document.createElement("button");
+backToTopButton.innerHTML = "&#8679;"; // Up arrow symbol
+backToTopButton.classList.add("back-to-top");
+document.body.appendChild(backToTopButton);
+
+backToTopButton.addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+
+    // Add a small bounce effect on click
+    backToTopButton.classList.add("clicked");
+    setTimeout(() => backToTopButton.classList.remove("clicked"), 200);
+});
+
+window.addEventListener("scroll", () => {
     if (window.scrollY > 300) {
-        backToTop.style.display = 'block';
+        backToTopButton.classList.add("show");
     } else {
-        backToTop.style.display = 'none';
+        backToTopButton.classList.remove("show");
     }
 });
 
-backToTop.addEventListener('click', () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+// Intersection Observer for animations
+const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add("in-view");
+        } else {
+            entry.target.classList.remove("in-view");
+        }
+    });
 });
+
+document.querySelectorAll(".animate-on-scroll").forEach(element => {
+    observer.observe(element);
+});
+
+
